@@ -23,6 +23,7 @@ def create_todo():
     if not title:
         return jsonify({'error': 'Title is required'}), 400
 
+    # Dummy todo item
     todo_item = {
         'id': len(todo_list) + 1,
         'title': title,
