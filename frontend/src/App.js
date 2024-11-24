@@ -8,10 +8,8 @@ function App() {
   const [sortOption, setSortOption] = useState('creation'); // Default sorting
   const [error, setError] = useState(null);
 
-  // Base API URL
   const API_URL = 'http://localhost:5000/todos';
 
-  // Fetch and sort to-do items when the component mounts
   useEffect(() => {
     fetchTodos();
   }, []);
@@ -20,7 +18,7 @@ function App() {
     try {
       const response = await axios.get(API_URL);
       const fetchedTodos = response.data.todos;
-      sortTodos(fetchedTodos, sortOption); // Sort the fetched todos
+      sortTodos(fetchedTodos, sortOption);
       setError(null);
     } catch (err) {
       setError('Error fetching to-do items');
@@ -35,7 +33,7 @@ function App() {
     try {
       const response = await axios.post(API_URL, { title: newTodo });
       const updatedTodos = [...todos, response.data];
-      sortTodos(updatedTodos, sortOption); // Sort after adding a new todo
+      sortTodos(updatedTodos, sortOption);
       setNewTodo('');
       setError(null);
     } catch (err) {
@@ -43,24 +41,11 @@ function App() {
     }
   };
 
-  const updateTodo = async (id, updatedFields) => {
-    try {
-      const response = await axios.put(`${API_URL}/${id}`, updatedFields);
-      const updatedTodos = todos.map((todo) =>
-        todo.id === id ? response.data : todo
-      );
-      sortTodos(updatedTodos, sortOption); // Sort after updating a todo
-      setError(null);
-    } catch (err) {
-      setError('Error updating to-do item');
-    }
-  };
-
   const deleteTodo = async (id) => {
     try {
       await axios.delete(`${API_URL}/${id}`);
       const updatedTodos = todos.filter((todo) => todo.id !== id);
-      sortTodos(updatedTodos, sortOption); // Sort after deleting a todo
+      sortTodos(updatedTodos, sortOption);
       setError(null);
     } catch (err) {
       setError('Error deleting to-do item');
@@ -69,7 +54,9 @@ function App() {
 
   const toggleCompletion = async (id, currentStatus) => {
     try {
-      await updateTodo(id, { completed: !currentStatus }); // Flip the completed status
+      const updatedFields = { completed: !currentStatus };
+      await axios.put(`${API_URL}/${id}`, updatedFields);
+      fetchTodos();
     } catch (err) {
       setError('Error toggling completion status');
     }
@@ -78,7 +65,7 @@ function App() {
   const handleSortChange = (e) => {
     const newSortOption = e.target.value;
     setSortOption(newSortOption);
-    sortTodos(todos, newSortOption); // Apply sorting when the sort option changes
+    sortTodos(todos, newSortOption);
   };
 
   const sortTodos = (todosToSort, criteria) => {
@@ -87,62 +74,54 @@ function App() {
       sortedTodos.sort((a, b) => a.title.localeCompare(b.title));
     } else if (criteria === 'completed') {
       sortedTodos.sort((a, b) => a.completed - b.completed);
-    } else if (criteria === 'creation') {
-      sortedTodos.sort((a, b) => a.id - b.id); // Assuming lower ID = earlier creation
+    } else {
+      sortedTodos.sort((a, b) => a.id - b.id);
     }
     setTodos(sortedTodos);
   };
 
   return (
     <div className="App">
-      <h1>To-Do List</h1>
-
-      {/* Add To-Do Item */}
-      <div>
-        <input
-          type="text"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          placeholder="Enter a new to-do"
-        />
-        <button onClick={addTodo}>Add</button>
+      <div className="container">
+        <h1>To-Do List</h1>
+        <div className="todo-input">
+          <input
+            type="text"
+            value={newTodo}
+            onChange={(e) => setNewTodo(e.target.value)}
+            placeholder="Enter a new to-do"
+          />
+          <button onClick={addTodo}>Add</button>
+        </div>
+        <div className="sort-section">
+          <label htmlFor="sort">Sort by:</label>
+          <select id="sort" value={sortOption} onChange={handleSortChange}>
+            <option value="creation">Creation Order</option>
+            <option value="title">Title</option>
+            <option value="completed">Completion Status</option>
+          </select>
+        </div>
+        {error && <p className="error">{error}</p>}
+        <ul className="todo-list">
+          {todos.map((todo) => (
+            <li key={todo.id} className="todo-item">
+              <span
+                className={`todo-title ${todo.completed ? 'completed' : ''}`}
+              >
+                {todo.title}
+              </span>
+              <div className="actions">
+                <button onClick={() => toggleCompletion(todo.id, todo.completed)}>
+                  {todo.completed ? 'Undo' : 'Complete'}
+                </button>
+                <button className="delete-btn" onClick={() => deleteTodo(todo.id)}>
+                  Delete
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
-
-      {/* Sorting Options */}
-      <div>
-        <label htmlFor="sort">Sort by:</label>
-        <select id="sort" value={sortOption} onChange={handleSortChange}>
-          <option value="creation">Creation Order</option>
-          <option value="title">Title</option>
-          <option value="completed">Completion Status</option>
-        </select>
-      </div>
-
-      {/* Display Error */}
-      {error && <h2 style={{ color: 'red' }}>{error}</h2>}
-
-      {/* Display To-Do Items */}
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>
-            <span
-              style={{
-                textDecoration: todo.completed ? 'line-through' : 'none',
-              }}
-            >
-              {todo.title}
-            </span>
-            <button
-              onClick={() =>
-                toggleCompletion(todo.id, todo.completed)
-              }
-            >
-              {todo.completed ? 'Mark as Incomplete' : 'Mark as Complete'}
-            </button>
-            <button onClick={() => deleteTodo(todo.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
