@@ -1,0 +1,16 @@
+services:
+  todobackend:
+    build: ./backend
+    links:
+      - db
+    ports:
+      - "5000:5000"
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"  # Exposing the database for local development
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/:ro

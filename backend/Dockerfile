@@ -9,7 +9,7 @@ WORKDIR /app
 COPY . /app
 
 # Step 4: Install necessary Python packages
-RUN pip install --no-cache-dir flask flask-cors
+RUN pip install --no-cache-dir flask flask-cors mysql-connector-python
 
 # Step 5: Expose the port that the Flask application will run on
 EXPOSE 5000
