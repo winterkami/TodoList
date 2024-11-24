@@ -1,0 +1,22 @@
+services:
+  todofrontend:
+    build: ./frontend
+    links:
+      - todobackend
+    ports:
+      - "80:80"  
+
+  todobackend:
+    build: ./backend
+    links:
+      - db
+    ports:
+      - "5000:5000"
+
+
+  db:
+    build: ./db
+    ports:
+      - "3306:3306"  # Exposing the database for local development
+    environment:
+      MYSQL_ROOT_PASSWORD: root
