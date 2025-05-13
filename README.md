@@ -1,11 +1,8 @@
 # Introduction 
-This is a Java GUI TODO list program. 
-
-## Features
-- 
+This is a 3 container TODO list program hosted using Azure Web Apps
 
 ## Implementation
-A database is used to store all the data. And the user will interact with the program using a GUI
+A SQL database container is used to store all the data. And the user will interact with the program using a GUI
 
 This project aims to implement a simple To-Do list that allows user to add, edit, delete and mark tasks as completed. The user should also be able to filter tasks by completion status and sort by alphabetical order or by order added. The user is able to interact with the To-Do list through a React API. The motivation behind this project is to provide a simple and easy to use To-Do list that can be used by anyone. The simplicity of the project allows us to focus on the concepts and tools learned throughout the course for designing, developing, testing and deploying a software project.
 
@@ -15,7 +12,6 @@ This project aims to implement a simple To-Do list that allows user to add, edit
 3. Open `http://localhost:80` in the browser
 
 # Build and Test
-TODO
 
 ## Backend
 
